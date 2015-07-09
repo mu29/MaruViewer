@@ -8,23 +8,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MainFragment extends Fragment {
+public class BookmarkFragment extends Fragment {
     private Context mContext;
 
-    public static MainFragment newInstance(Context context) {
-        MainFragment fragment = new MainFragment();
+    public static BookmarkFragment newInstance(Context context) {
+        BookmarkFragment fragment = new BookmarkFragment();
         fragment.mContext = context;
-
+        
         return fragment;
     }
 
-    public MainFragment() {
+    public BookmarkFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_bookmark, container, false);
 
         return rootView;
     }

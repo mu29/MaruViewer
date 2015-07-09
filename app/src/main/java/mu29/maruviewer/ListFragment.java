@@ -8,23 +8,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MainFragment extends Fragment {
+public class ListFragment extends Fragment {
     private Context mContext;
 
-    public static MainFragment newInstance(Context context) {
-        MainFragment fragment = new MainFragment();
+    public static ListFragment newInstance(Context context) {
+        ListFragment fragment = new ListFragment();
         fragment.mContext = context;
 
         return fragment;
     }
 
-    public MainFragment() {
+    public ListFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
 
         return rootView;
     }
