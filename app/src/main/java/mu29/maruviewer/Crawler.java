@@ -19,9 +19,13 @@ public class Crawler {
             Document doc = Jsoup.connect(Statics.Url.UPDATE + page).get();
             Elements titles = doc.select("span.subject");
             Elements dates = doc.select("div.info");
+            Elements images = doc.select("div.image-thumb");
 
             for (int i = 0; i < titles.size(); i++) {
-                ComicInfo info = new ComicInfo(titles.get(i).text(), dates.get(i).text(), "");
+                String attr = images.get(i).attr("style");
+                ComicInfo info = new ComicInfo(titles.get(i + 1).text(),
+                        dates.get(i + 1).text(),
+                        attr.substring(attr.indexOf("http://"), attr.indexOf(")")));
                 comicInfos.add(info);
             }
         } catch (Exception e) {

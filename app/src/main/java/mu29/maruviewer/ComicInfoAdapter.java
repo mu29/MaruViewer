@@ -2,6 +2,9 @@ package mu29.maruviewer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,11 +12,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.ArrayList;
 
-/**
- * Created by InJung on 2015. 7. 9..
- */
 public class ComicInfoAdapter extends ArrayAdapter<ComicInfo> {
 
     private Context mContext;
@@ -28,7 +29,7 @@ public class ComicInfoAdapter extends ArrayAdapter<ComicInfo> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         View row = convertView;
 
         if (row == null) {
@@ -43,6 +44,18 @@ public class ComicInfoAdapter extends ArrayAdapter<ComicInfo> {
         date.setText(mComicData.get(position).getDate());
 
         ImageView image = (ImageView) row.findViewById(R.id.comic_info_image);
+        String imagePath = mContext.getFilesDir().getPath() + "/" + mComicData.get(position).getTitle();
+        File imageFile = new File(imagePath);
+        if (imageFile.exists()) {
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = 10;
+            options.inJustDecodeBounds = false;
+            Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+            image.setImageBitmap(bitmap);
+        } else {
+            FileDownloader downloader = new FileDownloader(mContext);
+            downloader.startDownload(mComicData.get(position).getImageSrc(), mComicData.get(position).getTitle());
+        }
 
         return row;
     }
