@@ -109,9 +109,9 @@ public class Crawler {
 
                         ComicInfo info = new ComicInfo(title, "", image, link);
                         Data.comics.add(info);
-                        titleData += title + ",";
-                        imageData += image + ",";
-                        linkData += link + ",";
+                        titleData += title + "\\|";
+                        imageData += image + "\\|";
+                        linkData += link + "\\|";
                     }
                 }
 
@@ -122,9 +122,9 @@ public class Crawler {
                 editor.putString("link", linkData);
                 editor.apply();
             } else {
-                String[] titleList = titleData.split(",");
-                String[] imageList = imageData.split(",");
-                String[] linkList = linkData.split(",");
+                String[] titleList = titleData.split("\\|");
+                String[] imageList = imageData.split("\\|");
+                String[] linkList = linkData.split("\\|");
 
                 for (int i = 0; i < titleList.length; i++) {
                     if (titleList[i].equals(""))
@@ -132,9 +132,15 @@ public class Crawler {
 
                     ComicInfo info = new ComicInfo(titleList[i], "", imageList[i], linkList[i]);
                     Data.comics.add(info);
-                }
 
-                Data.downloadStatus = titleList.length;
+                    Data.downloadStatus++;
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialog.setProgress(Data.downloadStatus * 100 / 1325);
+                        }
+                    });
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

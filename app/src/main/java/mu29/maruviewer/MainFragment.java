@@ -38,12 +38,6 @@ public class MainFragment extends Fragment {
     }
 
     private void refresh() {
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progressDialog.setMessage("데이터베이스 생성 중입니다..");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
         final AsyncTask getUpdates = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
@@ -51,6 +45,12 @@ public class MainFragment extends Fragment {
                 comicInfoList.clear();
                 comicInfoList = crawler.getUpdateList(1);
                 return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialog = ProgressDialog.show(context, "", "로딩 중입니다..", true);
             }
 
             @Override
@@ -72,8 +72,19 @@ public class MainFragment extends Fragment {
             }
 
             @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialog = new ProgressDialog(context);
+                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                progressDialog.setMessage("데이터베이스 생성 중입니다..");
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+            }
+
+            @Override
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
+                progressDialog.dismiss();
                 getUpdates.execute();
             }
         };
