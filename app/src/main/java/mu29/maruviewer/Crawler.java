@@ -35,4 +35,26 @@ public class Crawler {
         return comicInfos;
     }
 
+    public ArrayList<ComicInfo> getComicList(int page) {
+        ArrayList<ComicInfo> comicInfos = new ArrayList<>();
+
+        try {
+            Document doc = Jsoup.connect(Statics.Url.LIST + page).get();
+            Elements titles = doc.select("span.subject");
+            Elements images = doc.select("div.image-thumb");
+
+            for (int i = 0; i < titles.size(); i++) {
+                String attr = images.get(i).attr("style");
+                ComicInfo info = new ComicInfo(titles.get(i).text(),
+                        "",
+                        attr.substring(attr.indexOf("http://"), attr.indexOf(")")));
+                comicInfos.add(info);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return comicInfos;
+    }
+
 }

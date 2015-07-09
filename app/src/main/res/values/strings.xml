@@ -1,13 +1,17 @@
 <resources>
     <string name="app_name">MaruViewer</string>
 
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_update">업데이트</string>
+    <string name="title_list">전체보기</string>
+    <string name="title_bookmark">즐겨찾기</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="btn_previous">이전 페이지</string>
+    <string name="btn_next">다음 페이지</string>
 
-    <string name="action_settings">Settings</string>
+    <string name="error_first_page">첫 페이지입니다.</string>
+    <string name="error_last_page">마지막 페이지입니다.</string>
+
+    <string name="action_settings">Action Settings</string>
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

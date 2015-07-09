@@ -12,13 +12,12 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 public class MainFragment extends Fragment {
-    private Context mContext;
-    private Context mSelf;
-    private ArrayList<ComicInfo> comicInfos = new ArrayList<>();
+    private Context context;
+    private ArrayList<ComicInfo> comicInfoList = new ArrayList<>();
 
     public static MainFragment newInstance(Context context) {
         MainFragment fragment = new MainFragment();
-        fragment.mContext = context;
+        fragment.context = context;
         return fragment;
     }
 
@@ -34,7 +33,8 @@ public class MainFragment extends Fragment {
             @Override
             protected Object doInBackground(Object[] params) {
                 Crawler crawler = new Crawler();
-                comicInfos = crawler.getUpdateList(1);
+                comicInfoList.clear();
+                comicInfoList = crawler.getUpdateList(1);
                 return null;
             }
 
@@ -42,7 +42,7 @@ public class MainFragment extends Fragment {
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
                 ListView listView = (ListView) rootView.findViewById(R.id.main_update_list);
-                ComicInfoAdapter adapter = new ComicInfoAdapter(mContext, R.layout.comic_info, comicInfos);
+                ComicInfoAdapter adapter = new ComicInfoAdapter(context, R.layout.comic_info, comicInfoList);
                 listView.setAdapter(adapter);
             }
         };
