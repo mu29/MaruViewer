@@ -53,10 +53,12 @@ public class ComicInfoAdapter extends ArrayAdapter<ComicInfo> {
             Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
             image.setImageBitmap(bitmap);
         } else {
-            FileDownloader downloader = new FileDownloader(mContext);
+            FileDownloader downloader = new FileDownloader(mContext, this);
             downloader.startDownload(mComicData.get(position).getImageSrc(), mComicData.get(position).getTitle());
         }
 
         return row;
     }
+
+
 }

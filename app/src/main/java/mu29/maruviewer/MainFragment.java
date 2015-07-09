@@ -1,5 +1,6 @@
 package mu29.maruviewer;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import java.util.ArrayList;
 public class MainFragment extends Fragment {
     private Context context;
     private ArrayList<ComicInfo> comicInfoList = new ArrayList<>();
+    private View rootView;
+    private ProgressDialog progressDialog;
 
     public static MainFragment newInstance(Context context) {
         MainFragment fragment = new MainFragment();
@@ -27,12 +30,24 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        AsyncTask getUpdates = new AsyncTask() {
+        refresh();
+
+        return rootView;
+    }
+
+    private void refresh() {
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        progressDialog.setMessage("데이터베이스 생성 중입니다..");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        final AsyncTask getUpdates = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                Crawler crawler = new Crawler();
+                Crawler crawler = new Crawler(context);
                 comicInfoList.clear();
                 comicInfoList = crawler.getUpdateList(1);
                 return null;
@@ -44,10 +59,24 @@ public class MainFragment extends Fragment {
                 ListView listView = (ListView) rootView.findViewById(R.id.main_update_list);
                 ComicInfoAdapter adapter = new ComicInfoAdapter(context, R.layout.comic_info, comicInfoList);
                 listView.setAdapter(adapter);
+                progressDialog.dismiss();
             }
         };
-        getUpdates.execute();
 
-        return rootView;
+        AsyncTask makeDataBase = new AsyncTask() {
+            @Override
+            protected Object doInBackground(Object[] params) {
+                Crawler crawler = new Crawler(context, progressDialog);
+                crawler.makeDataBase();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                getUpdates.execute();
+            }
+        };
+        makeDataBase.execute();
     }
 }

@@ -20,7 +20,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     private ComicInfoAdapter comicInfoAdapter;
     private int currentPage = 1;
     private View rootView;
-    private ProgressDialog mProgressDialog;
+    private ProgressDialog progressDialog;
 
     public static ListFragment newInstance(Context context) {
         ListFragment fragment = new ListFragment();
@@ -53,6 +53,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
             case R.id.list_button_previous:
                 if (currentPage > 1) {
                     currentPage -= 1;
+                    progressDialog = ProgressDialog.show(context, "", "로딩 중입니다..", true);
                     refresh();
                 } else {
                     Toast.makeText(context, R.string.error_first_page, Toast.LENGTH_SHORT).show();
@@ -61,6 +62,7 @@ public class ListFragment extends Fragment implements View.OnClickListener {
             case R.id.list_button_next:
                 if (currentPage < 45) {
                     currentPage += 1;
+                    progressDialog = ProgressDialog.show(context, "", "로딩 중입니다..", true);
                     refresh();
                 } else {
                     Toast.makeText(context, R.string.error_last_page, Toast.LENGTH_SHORT).show();
@@ -70,11 +72,10 @@ public class ListFragment extends Fragment implements View.OnClickListener {
     }
 
     private void refresh() {
-        mProgressDialog = ProgressDialog.show(context, "", "로딩 중입니다..", true);
         AsyncTask getLists = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                Crawler crawler = new Crawler();
+                Crawler crawler = new Crawler(context);
                 comicInfoList.clear();
                 comicInfoList = crawler.getComicList(currentPage);
                 return null;
@@ -86,7 +87,9 @@ public class ListFragment extends Fragment implements View.OnClickListener {
                 ListView listView = (ListView) rootView.findViewById(R.id.main_update_list);
                 comicInfoAdapter = new ComicInfoAdapter(context, R.layout.comic_info, comicInfoList);
                 listView.setAdapter(comicInfoAdapter);
-                mProgressDialog.dismiss();
+
+                if (progressDialog != null && progressDialog.isShowing())
+                    progressDialog.dismiss();
             }
         };
         getLists.execute();
