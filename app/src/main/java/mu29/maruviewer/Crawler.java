@@ -4,14 +4,14 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 
 public class Crawler {
     private Context context;
@@ -26,6 +26,29 @@ public class Crawler {
         this.dialog = dialog;
     }
 
+    public HashMap<String, String> getItems(String title) {
+        HashMap<String, String> comicList = new HashMap<>();
+
+        try {
+            ComicInfo info = Data.findComic(title);
+            if (info == null)
+                return null;
+
+            Document doc = Jsoup.connect(info.getLink()).get();
+            Elements items = doc.select("a[target]");
+
+            for (Element e : items) {
+                String item = e.text();
+                String link = e.attr("href");
+                comicList.put(item, link);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return comicList;
+    }
+
     public ArrayList<ComicInfo> getUpdateList(int page) {
         ArrayList<ComicInfo> comicInfos = new ArrayList<>();
 
@@ -33,14 +56,19 @@ public class Crawler {
             Document doc = Jsoup.connect(Data.Url.UPDATE + page).get();
             Elements titles = doc.select("span.subject");
             Elements dates = doc.select("div.info");
-            Elements images = doc.select("div.image-thumb");
 
             for (int i = 0; i < titles.size(); i++) {
-                String attr = images.get(i).attr("style");
-                ComicInfo info = new ComicInfo(titles.get(i + 1).text(),
-                        dates.get(i + 1).text(),
-                        attr.substring(attr.indexOf("http://"), attr.indexOf(")")),
-                        "");
+                String fullTitle = titles.get(i + 1).text();
+                String title = fullTitle.replaceAll(" [0-9~, ]+화.*", "");
+                String latest = fullTitle.replace(title, "").replace(" ", "");
+
+                ComicInfo info = Data.findComic(title);
+
+                if (info == null)
+                    continue;
+
+                info.setDate(dates.get(i + 1).text());
+                info.setLatest(latest);
                 comicInfos.add(info);
             }
         } catch (Exception e) {
@@ -56,14 +84,13 @@ public class Crawler {
         try {
             Document doc = Jsoup.connect(Data.Url.LIST + page).get();
             Elements titles = doc.select("span.subject");
-            Elements images = doc.select("div.image-thumb");
 
             for (int i = 0; i < titles.size(); i++) {
-                String attr = images.get(i).attr("style");
-                ComicInfo info = new ComicInfo(titles.get(i).text(),
-                        "",
-                        attr.substring(attr.indexOf("http://"), attr.indexOf(")")),
-                        "");
+                String title = titles.get(i).text();
+
+                ComicInfo info = Data.findComic(title);
+                if (info == null)
+                    continue;
                 comicInfos.add(info);
             }
         } catch (Exception e) {
@@ -94,7 +121,7 @@ public class Crawler {
                     for (int i = 0; i < titles.size(); i++) {
                         String title = titles.get(i).text();
                         String imageAttr = images.get(i).attr("style");
-                        String image = imageAttr.contains("https") ? "https" : "http";
+                        String image = imageAttr.contains("https") ? "https:" : "http:";
                         image += imageAttr.substring(imageAttr.indexOf("//"), imageAttr.indexOf(")"));
                         String linkAttr = links.get(i).attr("onclick");
                         String link = Data.Url.BASE + linkAttr.substring(linkAttr.indexOf("/?c="), linkAttr.indexOf("')"));
@@ -107,11 +134,11 @@ public class Crawler {
                             }
                         });
 
-                        ComicInfo info = new ComicInfo(title, "", image, link);
+                        ComicInfo info = new ComicInfo(title, image, link, "");
                         Data.comics.add(info);
-                        titleData += title + "\\|";
-                        imageData += image + "\\|";
-                        linkData += link + "\\|";
+                        titleData += title + "|";
+                        imageData += image + "|";
+                        linkData += link + "|";
                     }
                 }
 
@@ -130,7 +157,7 @@ public class Crawler {
                     if (titleList[i].equals(""))
                         continue;
 
-                    ComicInfo info = new ComicInfo(titleList[i], "", imageList[i], linkList[i]);
+                    ComicInfo info = new ComicInfo(titleList[i], imageList[i], linkList[i], "");
                     Data.comics.add(info);
 
                     Data.downloadStatus++;
