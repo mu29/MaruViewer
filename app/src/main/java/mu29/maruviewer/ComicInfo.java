@@ -5,11 +5,12 @@ package mu29.maruviewer;
  */
 public class ComicInfo {
     private String title;
-    private String date;
     private String imageSrc;
     private String link;
+    private String date;
+    private String latest;
 
-    public ComicInfo(String title, String date, String imageSrc, String link) {
+    public ComicInfo(String title, String imageSrc, String link, String date) {
         this.title = title;
         this.date = date;
         this.imageSrc = imageSrc;
@@ -30,5 +31,17 @@ public class ComicInfo {
 
     public String getLink() {
         return link;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getLatest() {
+        return latest;
+    }
+
+    public void setLatest(String latest) {
+        this.latest = latest;
     }
 }
