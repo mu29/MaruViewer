@@ -12,32 +12,29 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
-public class MainFragment extends Fragment {
+public class UpdateFragment extends Fragment {
     private Context context;
     private ArrayList<ComicInfo> comicInfoList = new ArrayList<>();
     private View rootView;
     private ProgressDialog progressDialog;
 
-    public static MainFragment newInstance(Context context) {
-        MainFragment fragment = new MainFragment();
+    public static UpdateFragment newInstance(Context context) {
+        UpdateFragment fragment = new UpdateFragment();
         fragment.context = context;
         return fragment;
     }
 
-    public MainFragment() {
+    public UpdateFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-        refresh();
-
+        rootView = inflater.inflate(R.layout.fragment_update, container, false);
         return rootView;
     }
 
-    private void refresh() {
+    public void refresh() {
         final AsyncTask getUpdates = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
@@ -57,37 +54,11 @@ public class MainFragment extends Fragment {
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
                 ListView listView = (ListView) rootView.findViewById(R.id.main_update_list);
-                ComicInfoAdapter adapter = new ComicInfoAdapter(context, R.layout.comic_info, comicInfoList);
+                ComicInfoAdapter adapter = new ComicInfoAdapter(context, R.layout.update_info, comicInfoList);
                 listView.setAdapter(adapter);
                 progressDialog.dismiss();
             }
         };
-
-        AsyncTask makeDataBase = new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                Crawler crawler = new Crawler(context, progressDialog);
-                crawler.makeDataBase();
-                return null;
-            }
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                progressDialog = new ProgressDialog(context);
-                progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                progressDialog.setMessage("데이터베이스 생성 중입니다..");
-                progressDialog.setCancelable(false);
-                progressDialog.show();
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                progressDialog.dismiss();
-                getUpdates.execute();
-            }
-        };
-        makeDataBase.execute();
+        getUpdates.execute();
     }
 }
