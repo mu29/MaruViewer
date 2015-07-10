@@ -2,8 +2,10 @@
     <string name="app_name">MaruViewer</string>
 
     <string name="title_update">업데이트</string>
-    <string name="title_list">전체보기</string>
+    <string name="title_list">목록보기</string>
     <string name="title_bookmark">즐겨찾기</string>
+
+    <string name="btn_add">만화 검색</string>
 
     <string name="btn_previous">이전 페이지</string>
     <string name="btn_next">다음 페이지</string>
@@ -15,4 +17,8 @@
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_splash">SplashActivity</string>
+
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_comic_list">ComicListActivity</string>
 </resources>
