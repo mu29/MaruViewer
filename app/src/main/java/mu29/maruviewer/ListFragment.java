@@ -2,19 +2,21 @@ package mu29.maruviewer;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
+import android.widget.GridView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class ListFragment extends Fragment implements View.OnClickListener {
+public class ListFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private Context context;
     private ArrayList<ComicInfo> comicInfoList = new ArrayList<>();
     private ComicInfoAdapter comicInfoAdapter;
@@ -38,10 +40,10 @@ public class ListFragment extends Fragment implements View.OnClickListener {
 
         Button btnPrevious = (Button) rootView.findViewById(R.id.list_button_previous);
         Button btnNext = (Button) rootView.findViewById(R.id.list_button_next);
+        GridView gridView = (GridView) rootView.findViewById(R.id.main_comic_list);
         btnPrevious.setOnClickListener(this);
         btnNext.setOnClickListener(this);
-
-        refresh();
+        gridView.setOnItemClickListener(this);
 
         return rootView;
     }
@@ -53,7 +55,6 @@ public class ListFragment extends Fragment implements View.OnClickListener {
             case R.id.list_button_previous:
                 if (currentPage > 1) {
                     currentPage -= 1;
-                    progressDialog = ProgressDialog.show(context, "", "로딩 중입니다..", true);
                     refresh();
                 } else {
                     Toast.makeText(context, R.string.error_first_page, Toast.LENGTH_SHORT).show();
@@ -62,7 +63,6 @@ public class ListFragment extends Fragment implements View.OnClickListener {
             case R.id.list_button_next:
                 if (currentPage < 45) {
                     currentPage += 1;
-                    progressDialog = ProgressDialog.show(context, "", "로딩 중입니다..", true);
                     refresh();
                 } else {
                     Toast.makeText(context, R.string.error_last_page, Toast.LENGTH_SHORT).show();
@@ -71,7 +71,15 @@ public class ListFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void refresh() {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        ComicInfo info = comicInfoAdapter.getItem(position);
+        Intent intent = new Intent(context, ComicListActivity.class);
+        intent.putExtra("title", info.getTitle());
+        startActivity(intent);
+    }
+
+    public void refresh() {
         AsyncTask getLists = new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
@@ -82,9 +90,15 @@ public class ListFragment extends Fragment implements View.OnClickListener {
             }
 
             @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                progressDialog = ProgressDialog.show(context, "", "로딩 중입니다..", true);
+            }
+
+            @Override
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
-                ListView listView = (ListView) rootView.findViewById(R.id.main_update_list);
+                GridView listView = (GridView) rootView.findViewById(R.id.main_comic_list);
                 comicInfoAdapter = new ComicInfoAdapter(context, R.layout.comic_info, comicInfoList);
                 listView.setAdapter(comicInfoAdapter);
 
