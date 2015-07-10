@@ -1,5 +1,6 @@
 package mu29.maruviewer;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 import android.content.Context;
@@ -24,6 +25,7 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
 
         final ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setTitle("");
 
         // 섹션 어댑터 만들기
         mSectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
@@ -52,6 +54,14 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // 탭이 선택된 경우 페이지 넘기기
         mViewPager.setCurrentItem(tab.getPosition());
+        switch (tab.getPosition()) {
+            case 1:
+                ((UpdateFragment) mSectionsPagerAdapter.getItem(tab.getPosition())).refresh();
+                break;
+            case 2:
+                ((ListFragment) mSectionsPagerAdapter.getItem(tab.getPosition())).refresh();
+                break;
+        }
     }
 
     @Override
@@ -67,11 +77,16 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        private Context mContext;
+        private Context context;
+        private ArrayList<Fragment> fragments = new ArrayList<>();
 
         public SectionsPagerAdapter(Context context, FragmentManager fm) {
             super(fm);
-            mContext = context;
+            this.context = context;
+
+            fragments.add(0, BookmarkFragment.newInstance(context));
+            fragments.add(1, UpdateFragment.newInstance(context));
+            fragments.add(2, ListFragment.newInstance(context));
         }
 
         @Override
@@ -80,11 +95,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             // Return a PlaceholderFragment (defined as a static inner class below).
             switch (position) {
                 case 0:
-                    return MainFragment.newInstance(mContext);
+                    return fragments.get(0);
                 case 1:
-                    return ListFragment.newInstance(mContext);
+                    return fragments.get(1);
                 case 2:
-                    return BookmarkFragment.newInstance(mContext);
+                    return fragments.get(2);
             }
 
             return null;
@@ -101,11 +116,11 @@ public class MainActivity extends ActionBarActivity implements ActionBar.TabList
             Locale l = Locale.getDefault();
             switch (position) {
                 case 0:
-                    return getString(R.string.title_update).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_list).toUpperCase(l);
-                case 2:
                     return getString(R.string.title_bookmark).toUpperCase(l);
+                case 1:
+                    return getString(R.string.title_update).toUpperCase(l);
+                case 2:
+                    return getString(R.string.title_list).toUpperCase(l);
             }
             return null;
         }
