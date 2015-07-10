@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class ComicListActivity extends ActionBarActivity {
     private String title;
-    private HashMap<String, String> comicItems = new HashMap<>();
+    private ArrayList<ComicInfo> comicItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,9 @@ public class ComicListActivity extends ActionBarActivity {
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
                 ListView listView = (ListView) ComicListActivity.this.findViewById(R.id.comic_item_list);
-                ArrayList<String> items = new ArrayList<>(comicItems.keySet());
+                ArrayList<String> items = new ArrayList<>();
+                for (int i = 0; i < comicItems.size(); i++)
+                    items.add(comicItems.get(i).getTitle());
                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(ComicListActivity.this,
                                 android.R.layout.simple_list_item_1, items);
                 listView.setAdapter(adapter);

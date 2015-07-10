@@ -26,8 +26,8 @@ public class Crawler {
         this.dialog = dialog;
     }
 
-    public HashMap<String, String> getItems(String title) {
-        HashMap<String, String> comicList = new HashMap<>();
+    public ArrayList<ComicInfo> getItems(String title) {
+        ArrayList<ComicInfo> comicList = new ArrayList<>();
 
         try {
             ComicInfo info = Data.findComic(title);
@@ -37,10 +37,15 @@ public class Crawler {
             Document doc = Jsoup.connect(info.getLink()).get();
             Elements items = doc.select("a[target]");
 
-            for (Element e : items) {
-                String item = e.text();
-                String link = e.attr("href");
-                comicList.put(item, link);
+            for (int i = 0; i < items.size(); i++) {
+                String item = items.get(i).text();
+
+                if (item.equals("") || item.startsWith("추천"))
+                    continue;
+
+                String link = items.get(i).attr("href");
+                ComicInfo comicInfo = new ComicInfo(item, "", link, "");
+                comicList.add(comicInfo);
             }
         } catch (Exception e) {
             e.printStackTrace();
