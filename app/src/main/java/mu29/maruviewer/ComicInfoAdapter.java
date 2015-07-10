@@ -37,24 +37,34 @@ public class ComicInfoAdapter extends ArrayAdapter<ComicInfo> {
             row = inflater.inflate(mLayoutResourceId, parent, false);
         }
 
-        TextView title = (TextView) row.findViewById(R.id.comic_info_title);
-        TextView date = (TextView) row.findViewById(R.id.comic_info_date);
+        switch (mLayoutResourceId) {
+            case R.layout.comic_info:
+                TextView comic_title = (TextView) row.findViewById(R.id.comic_info_title);
+                comic_title.setText(mComicData.get(position).getTitle());
 
-        title.setText(mComicData.get(position).getTitle());
-        date.setText(mComicData.get(position).getDate());
+                ImageView image = (ImageView) row.findViewById(R.id.comic_info_image);
+                String imagePath = mContext.getFilesDir().getPath() + "/" + mComicData.get(position).getTitle();
+                File imageFile = new File(imagePath);
+                if (imageFile.exists()) {
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 8;
+                    options.inJustDecodeBounds = false;
+                    Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+                    image.setImageBitmap(bitmap);
+                } else {
+                    FileDownloader downloader = new FileDownloader(mContext, this);
+                    downloader.startDownload(mComicData.get(position).getImageSrc(), mComicData.get(position).getTitle());
+                }
+                break;
+            case R.layout.update_info:
+                TextView update_title = (TextView) row.findViewById(R.id.update_info_title);
+                TextView update_date = (TextView) row.findViewById(R.id.update_info_date);
+                TextView update_latest = (TextView) row.findViewById(R.id.update_info_latest);
 
-        ImageView image = (ImageView) row.findViewById(R.id.comic_info_image);
-        String imagePath = mContext.getFilesDir().getPath() + "/" + mComicData.get(position).getTitle();
-        File imageFile = new File(imagePath);
-        if (imageFile.exists()) {
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 10;
-            options.inJustDecodeBounds = false;
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
-            image.setImageBitmap(bitmap);
-        } else {
-            FileDownloader downloader = new FileDownloader(mContext, this);
-            downloader.startDownload(mComicData.get(position).getImageSrc(), mComicData.get(position).getTitle());
+                update_title.setText(mComicData.get(position).getTitle());
+                update_date.setText(mComicData.get(position).getDate());
+                update_latest.setText(mComicData.get(position).getLatest());
+                break;
         }
 
         return row;
